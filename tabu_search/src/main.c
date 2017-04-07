@@ -2,17 +2,22 @@
 #include <log.h>
 #include <compiler.h>
 #include <world.h>
+#include <tsp.h>
+#include <stdlib.h>
 
+/* init logging before main  */
 void __before_main__(0) init(void)
 {
     log_init(stdout, LOG_TO_FILE);
 }
 
+/* deinit logging after main */
 void __after_main__(0) deinit(void)
 {
     log_deinit();
 }
 
+/* read from stdin our world */
 World *prepare_world(void)
 {
     long n;
@@ -60,9 +65,18 @@ World *prepare_world(void)
 int main(void)
 {
     World *w;
+    City **sol;
+    size_t n;
 
     w = prepare_world();
-    world_print(w);
+
+    sol = tsp_greedy_solution(w, &n);
+    tsp_cost_print(sol, n);
+    free(sol);
+
+    sol = tsp_rand_solution(w, &n);
+    tsp_cost_print(sol, n);
+    free(sol);
 
     world_destroy(w);
     return 0;

@@ -37,7 +37,7 @@ void city_print(City *city)
 
     assert(city == NULL);
 
-    (void)printf("City\tID = %d\tX = %lf\tY = %lf\n", city->id, city->x, city->y);
+    (void)printf("City\tID = %5d\tX = %10lf\tY = %10lf\n", city->id, city->x, city->y);
 }
 
 World *world_create(size_t n)
@@ -57,7 +57,7 @@ World *world_create(size_t n)
         ERROR("malloc error\n", NULL, "");
     }
 
-    memset(w->cities, (long)NULL, sizeof(City *) * n);
+    (void)memset(w->cities, (long)NULL, sizeof(City *) * n);
 
     w->num_cities = n;
 

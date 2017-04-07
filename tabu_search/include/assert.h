@@ -9,7 +9,7 @@
 #define ASSERT_MSG \
     "[ASSERT]\tFILE: %s\n\tFUNC: %s\tLINE: %d\n", __FILE__, __func__, __LINE__
 
-void __assert_msg(const char *msg, ...)
+__inline__ void __assert_msg(const char *msg, ...)
 {
     va_list args;
 

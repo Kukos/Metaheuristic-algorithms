@@ -12,6 +12,7 @@
 
 #include <stddef.h>
 #include <compiler.h>
+#include <math.h>
 
 typedef struct City
 {
@@ -72,7 +73,7 @@ double __inline__ __nonull__(1, 2) city_euclidean_dist(City *c1, City *c2)
 
     x = c1->x - c2->x;
     y = c1->y - c2->y;
-    return x * x + y * y;
+    return sqrt((x * x) + (y * y));
 }
 
 /*

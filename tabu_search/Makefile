@@ -13,7 +13,7 @@ SRCS = $(wildcard $(SDIR)/*.c)
 OBJS = $(SRCS:$(SDIR)/%.c=$(ODIR)/%.o)
 DEPS = $(wildcard $(IDIR)/*.h)
 
-LIBS =
+LIBS = -lm
 
 
 all: $(EXEC)
