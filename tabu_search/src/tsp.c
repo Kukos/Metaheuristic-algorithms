@@ -7,11 +7,18 @@
 #include <time.h>
 #include <stdlib.h>
 
+/* How long city can be in tabu list  */
 #define TABU_LIST_MAX_TIME_PARAM    3
 #define TABU_LIST_MAX_TIME(cities)  (TABU_LIST_MAX_TIME_PARAM * cities)
 
+/* punishment param, needed in aspiration */
 #define TABU_PUNSIHMENT_PARAM       0.2
 #define TABU_PUNSIHMENT(TL, Cost, time) ((int)(((time) / (TL->maxtime)) * (Cost) * TABU_PUNSIHMENT_PARAM))
+
+/* how many main loop we have in tabu search */
+#define TABU_MAX_LOOPS  4
+
+
 
 static __inline__ double tabu_search_new_euclidean_dist(City **sol, int i, int j, double cost)
 {
@@ -28,7 +35,7 @@ static __inline__ double tabu_search_new_euclidean_dist(City **sol, int i, int j
                 - city_euclidean_dist(sol[j - 1], sol[j])
                 - city_euclidean_dist(sol[j], sol[j + 1])
                 + city_euclidean_dist(sol[i], sol[j])
-                + city_euclidean_dist(sol[j], sol[i+2])
+                + city_euclidean_dist(sol[j], sol[i + 2])
                 + city_euclidean_dist(sol[j - 1], sol[i + 1])
                 + city_euclidean_dist(sol[i + 1], sol[j + 1]);
 }
@@ -44,6 +51,13 @@ typedef struct TabuList
     void    (*set)(struct TabuList *tl, int i, int j, int val);
 
 }TabuList;
+
+/* need to create pairs of neighbors */
+typedef struct CitiesPair
+{
+    City *c1;
+    City *c2;
+}CitiesPair;
 
 /*
     Get array[i][j]
@@ -98,6 +112,72 @@ static TabuList *tabu_list_create(size_t n, size_t m, size_t maxtime);
 */
 static void tabu_list_destroy(TabuList *tl);
 
+/*
+    Random solusion on existing solusion
+
+    PARAMS
+    @IN cities - array of cities or exisiting solusion
+    @IN n - size of array
+
+    RETURN
+    NULL iff failure
+    Solusion iff success
+*/
+static City **tabu_list_random_solusion(City **cities, size_t n);
+
+/*
+    Create Pair of cities @c1 and @c2
+
+    PARAMS
+    @IN c1 - pointer to first city
+    @IN c2 - pointer to second city
+
+    RETURN:
+    NULL iff failure
+    Pointer iff success
+*/
+static CitiesPair *cities_pair_create(City *c1, City *c2);
+
+/*
+    Destroy Pair
+
+    PARAMS
+    @IN pair - cities  pair
+
+    RETURN:
+    This is a void function
+*/
+static void cities_pair_destroy(CitiesPair *pair);
+
+static CitiesPair *cities_pair_create(City *c1, City *c2)
+{
+    CitiesPair *pair;
+
+    assert(c1 == NULL);
+    assert(c2 == NULL);
+
+    TRACE("");
+
+    pair = (CitiesPair *)malloc(sizeof(CitiesPair));
+    if (pair == NULL)
+        ERROR("malloc error\n", NULL, "");
+
+    pair->c1 = c1;
+    pair->c2 = c2;
+
+    return pair;
+}
+
+static void cities_pair_destroy(CitiesPair *pair)
+{
+    TRACE("");
+
+    if (pair == NULL)
+        return;
+
+    FREE(pair);
+}
+
 static int __tabu_list_get(TabuList *tl, int i, int j)
 {
     return tl->array[i * tl->nc + j];
@@ -122,6 +202,8 @@ static TabuList *tabu_list_create(size_t n, size_t m, size_t maxtime)
     if (tl->array == NULL)
         ERROR("malloc error\n", NULL, "");
 
+    (void)memset(tl->array, 0, sizeof(int) * n * m);
+
     tl->allocated = n * m;
     tl->nc = n;
     tl->maxtime = maxtime;
@@ -140,6 +222,26 @@ static void tabu_list_destroy(TabuList *tl)
 
     FREE(tl->array);
     FREE(tl);
+}
+
+static City **tabu_list_random_solusion(City **cities, size_t n)
+{
+    size_t i;
+    size_t randd;
+
+    assert(cities == NULL);
+    assert(n == 0);
+
+    TRACE("");
+
+    /* shuffle, but without first and last */
+    for (i = 1; i < n - 1; ++i)
+    {
+        randd = rand() % (n - i - 1) + i + 1;
+        SWAP(cities[i], cities[randd]);
+    }
+
+    return cities;
 }
 
 City **tsp_rand_solution(World *w, size_t *n)
@@ -232,4 +334,24 @@ double tsp_solution_cost(City **solution, size_t n)
         cost += city_euclidean_dist(solution[i], solution[i + 1]);
 
     return cost;
+}
+
+City **tsp_tabusearch_solution(World *w, size_t *n)
+{
+    City **global_solution;
+    City **local_solution;
+    City **best_local_solution;
+    CitiesPair **pairs;
+    TabuList *tl;
+
+    TRACE("");
+
+    assert(w == NULL);
+    assert(n == NULL);
+
+    tl = tabu_list_create(w->num_cities, w->num_cities, TABU_LIST_MAX_TIME(w->num_cities));
+    if (tl == NULL)
+        ERROR("tabu_list_create error\n", NULL, "");
+
+
 }

@@ -41,6 +41,19 @@ City **tsp_rand_solution(World *w, size_t *n);
 */
 City **tsp_greedy_solution(World *w, size_t *n);
 
+/*
+    Tabu Search solution
+
+    PARAMS
+    @IN w - pointer to world
+    @OUT n - size of solution array
+
+    RETURN
+    NULL iff failure
+    solution array iff success
+*/
+City **tsp_tabusearch_solution(World *w, size_t *n);
+
 
 /*
     Calculate cost of tsp solution
@@ -76,10 +89,7 @@ __inline__ void tsp_solution_print(City **solution, size_t n)
 
 __inline__ void tsp_cost_print(City **solution, size_t n)
 {
-    double cost;
-    cost = tsp_solution_cost(solution, n);
-
-    fprintf(stdout, "%lf\n", cost);
+    fprintf(stdout, "%lf\n", tsp_solution_cost(solution, n));
 }
 
 #endif
