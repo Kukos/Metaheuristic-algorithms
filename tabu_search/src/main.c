@@ -70,18 +70,9 @@ int main(void)
 
     w = prepare_world();
 
-    /*
-    sol = tsp_greedy_solution(w, &n);
-    tsp_cost_print(sol, n);
-    free(sol);
-
-    sol = tsp_rand_solution(w, &n);
-    tsp_cost_print(sol, n);
-    free(sol);
-    */
-
     sol = tsp_tabusearch_solution(w, &n);
     tsp_cost_print(sol, n);
+    tsp_solution_print(sol, n);
     free(sol);
 
     world_destroy(w);
