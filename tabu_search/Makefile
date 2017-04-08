@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -std=gnu99 -Wall -pedantic -O3 -DDEBUG_MODE
+CFLAGS = -std=gnu99 -Wall -pedantic -O3
 
 PROJECT_DIR = $(shell pwd)
 
@@ -15,7 +15,6 @@ DEPS = $(wildcard $(IDIR)/*.h)
 
 LIBS = -lm
 
-
 all: $(EXEC)
 
 # To obtain object files#
@@ -25,7 +24,6 @@ $(ODIR)/%.o: $(SDIR)/%.c $(DEPS)
 # Compile and link all together
 $(EXEC): $(OBJS)
 	$(CC) $(CFLAGS) -L$(LDIR) -I$(IDIR) $(OBJS) $(LIBS) -o $@
-
 
 clean:
 	rm -rf $(ODIR)/*
