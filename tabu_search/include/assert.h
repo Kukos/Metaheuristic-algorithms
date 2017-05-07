@@ -2,21 +2,12 @@
 #define ASSERT_H
 
 #include <compiler.h>   /* tostring */
-#include <stdarg.h>     /* va_args */
-#include <stdio.h>      /* vfprintf */
 #include <stdlib.h>     /* exit */
+
+void __assert_msg(const char *msg, ...);
 
 #define ASSERT_MSG \
     "[ASSERT]\tFILE: %s\n\tFUNC: %s\tLINE: %d\n", __FILE__, __func__, __LINE__
-
-__inline__ void __assert_msg(const char *msg, ...)
-{
-    va_list args;
-
-    va_start(args, msg);
-    (void)vfprintf(stderr, msg, args);
-    va_end(args);
-}
 
 #ifdef ASSERT
     #define assert(expr) \
